@@ -8,9 +8,14 @@ Xcode のプロジェクト一式を登録してあるので、実行すれば�
 
 Xcode の Build Target に SideMenuControllerSwiftFatBinary を指定して Build を実行すると、SideMenuControllerSwift.framework が作成される。これを自作アプリの Xcode の Embedded Binaries に設定する。
 
+あるいは、SideMenuControllerSwift フォルダを自作アプリの Xcode の Project に追加する。
+
+
+## Example
+
 ![メニュー例](screenshot.png "Screenshot")
 
-上記のメニューは、以下に示す SMCSideMenu のサブクラスを実装して利用する。
+上記のメニューは、以下に示す SMCSideMenu のサブクラスを実装する。
 
 ```SideMenu.swift
 class SideMenu: SMCSideMenu

@@ -3,7 +3,7 @@
  * FILE:	SMCSideMenuController.swift
  * DESCRIPTION:	SideMenuController: Sliding Side Menu Controller Main Class
  * DATE:	Mon, Feb 18 2019
- * UPDATED:	Tue, Feb 19 2019
+ * UPDATED:	Wed, Feb 20 2019
  * AUTHOR:	Kouichi ABE (WALL) / 阿部康一
  * E-MAIL:	kouichi@MagickWorX.COM
  * URL:		http://www.MagickWorX.COM/
@@ -120,7 +120,8 @@ public class SMCSideMenuController: UIViewController
 
   private lazy var sideMenuWidth: CGFloat = {
     let width: CGFloat = self.view.bounds.size.width
-    return width - 50.0
+    let right: CGFloat = 64.0 // Right margin at showing side menu
+    return width - right
   }()
 
   // Setup the container view which will hold the child view controllers view
