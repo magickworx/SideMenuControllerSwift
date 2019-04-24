@@ -3,7 +3,7 @@
  * FILE:	SMCSideMenuController.swift
  * DESCRIPTION:	SideMenuController: Sliding Side Menu Controller Main Class
  * DATE:	Mon, Feb 18 2019
- * UPDATED:	Wed, Feb 20 2019
+ * UPDATED:	Sat, Mar 23 2019
  * AUTHOR:	Kouichi ABE (WALL) / 阿部康一
  * E-MAIL:	kouichi@MagickWorX.COM
  * URL:		http://www.MagickWorX.COM/
@@ -35,8 +35,6 @@
  *   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  *   THE POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id: PMKPageMenuController.m,v 1.17 2016/09/02 10:05:59 kouichi Exp $
  *
  *****************************************************************************/
 
@@ -107,7 +105,9 @@ public class SMCSideMenuController: UIViewController
     tableView.dataSource = self
     tableView.delegate = self
     tableView.backgroundColor = .groupTableViewBackground
-    tableView.contentInsetAdjustmentBehavior = .never
+    if #available(iOS 11.0, *) {
+      tableView.contentInsetAdjustmentBehavior = .never
+    }
     tableView.separatorColor = .darkGray
     tableView.separatorInset = .zero
     tableView.layoutMargins = .zero
@@ -253,12 +253,14 @@ public class SMCSideMenuController: UIViewController
   public override func viewWillLayoutSubviews() {
     super.viewWillLayoutSubviews()
 
-    self.view.frame = {
-      let insets = self.view.safeAreaInsets
-      var frame: CGRect  = self.view.frame
-      frame.size.height -= insets.bottom
-      return frame
-    }()
+    if #available(iOS 11.0, *) {
+      self.view.frame = {
+        let insets = self.view.safeAreaInsets
+        var frame: CGRect  = self.view.frame
+        frame.size.height -= insets.bottom
+        return frame
+      }()
+    }
   }
 }
 

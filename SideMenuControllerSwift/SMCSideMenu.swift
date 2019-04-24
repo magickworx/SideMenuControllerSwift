@@ -3,7 +3,7 @@
  * FILE:	SMCSideMenu.swift
  * DESCRIPTION:	SideMenuController: Base Menu Class
  * DATE:	Mon, Feb 18 2019
- * UPDATED:	Tue, Feb 19 2019
+ * UPDATED:	Wed, Apr 24 2019
  * AUTHOR:	Kouichi ABE (WALL) / 阿部康一
  * E-MAIL:	kouichi@MagickWorX.COM
  * URL:		http://www.MagickWorX.COM/
@@ -36,8 +36,6 @@
  *   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  *   THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: AppDelegate.m,v 1.6 2017/04/12 09:59:00 kouichi Exp $
- *
  *****************************************************************************/
 
 import Foundation
@@ -47,6 +45,7 @@ open class SMCSideMenu: NSObject
 {
   public var viewControllerNames: [[String]] = []
   public var sectionTitles: [String] = []
+  public var menuIcons: [[UIImage?]] = []
   public var menuTitles: [[String]] = []
   public var menuFont: UIFont = UIFont.systemFont(ofSize: 17.0)
   public var menuColor: UIColor = .black
@@ -120,7 +119,18 @@ extension SMCSideMenu: SMCSideMenuDelegate
   }
 
   public func sideMenu(_ sideMenuController: SMCSideMenuController, configure cell: UITableViewCell, forRowAt indexPath: IndexPath) -> UITableViewCell {
-    let text: String = {
+    cell.imageView?.image = {
+      let section: Int = indexPath.section
+      let row: Int = indexPath.row
+      if !menuIcons.isEmpty {
+        let icons = menuIcons[section]
+        if row < icons.count {
+          return icons[row]
+        }
+      }
+      return nil
+    }()
+    cell.textLabel?.text = {
       let section: Int = indexPath.section
       let row: Int = indexPath.row
       if !menuTitles.isEmpty {
@@ -131,7 +141,6 @@ extension SMCSideMenu: SMCSideMenuDelegate
       }
       return String(format: "Menu %zd-%zd", section + 1, row + 1)
     }()
-    cell.textLabel?.text = text
     cell.textLabel?.font = menuFont
     cell.textLabel?.textColor = menuColor
 

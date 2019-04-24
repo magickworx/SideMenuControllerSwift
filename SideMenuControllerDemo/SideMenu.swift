@@ -3,7 +3,7 @@
  * FILE:	SideMenu.swift
  * DESCRIPTION:	SideMenuControllerDemo: Menu for SideMenuController
  * DATE:	Tue, Feb 19 2019
- * UPDATED:	Tue, Feb 19 2019
+ * UPDATED:	Wed, Apr 24 2019
  * AUTHOR:	Kouichi ABE (WALL) / 阿部康一
  * E-MAIL:	kouichi@MagickWorX.COM
  * URL:		http://www.MagickWorX.COM/
@@ -35,8 +35,6 @@
  *   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  *   THE POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id: AppDelegate.m,v 1.6 2017/04/12 09:59:00 kouichi Exp $
  *
  *****************************************************************************/
 
@@ -73,6 +71,17 @@ class SideMenu: SMCSideMenu
       [
         "Settings",
         "Information",
+      ]
+    ]
+    self.menuIcons = [
+      [
+        UIImage(named: "icon_timeline"),
+        UIImage(named: "icon_favorites"),
+        UIImage(named: "icon_bookmarks")
+      ],
+      [
+        UIImage(named: "icon_settings"),
+        UIImage(named: "icon_info")
       ]
     ]
   }
