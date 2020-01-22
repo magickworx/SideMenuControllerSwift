@@ -3,14 +3,14 @@
  * FILE:	SideMenu.swift
  * DESCRIPTION:	SideMenuControllerDemo: Menu for SideMenuController
  * DATE:	Tue, Feb 19 2019
- * UPDATED:	Wed, Apr 24 2019
+ * UPDATED:	Wed, Jan 22 2020
  * AUTHOR:	Kouichi ABE (WALL) / 阿部康一
  * E-MAIL:	kouichi@MagickWorX.COM
  * URL:		http://www.MagickWorX.COM/
- * COPYRIGHT:	(c) 2019 阿部康一／Kouichi ABE (WALL), All rights reserved.
+ * COPYRIGHT:	(c) 2019-2020 阿部康一／Kouichi ABE (WALL), All rights reserved.
  * LICENSE:
  *
- *  Copyright (c) 2019 Kouichi ABE (WALL) <kouichi@MagickWorX.COM>,
+ *  Copyright (c) 2019-2020 Kouichi ABE (WALL) <kouichi@MagickWorX.COM>,
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -87,7 +87,7 @@ class SideMenu: SMCSideMenu
   }
 
   override open func textColorOfHeader(in section: Int) -> UIColor? {
-    return .black
+    return .label
   }
 
   override open func backgroundColorOfHeader(in section: Int) -> UIColor? {

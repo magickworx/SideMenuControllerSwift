@@ -79,14 +79,14 @@ class SideMenu: SMCSideMenu
 
 ## Requirements
 
- - Swift 4.2
- - iOS 12.1 or later
- - Xcode 10.1 or later
+ - Swift 5.0
+ - iOS 13.3 or later
+ - Xcode 11.3 or later
 
 
 ## License Agreement
 
-Copyright (c) 2019, Kouichi ABE (WALL) All rights reserved.
+Copyright (c) 2019-2020, Kouichi ABE (WALL) All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:

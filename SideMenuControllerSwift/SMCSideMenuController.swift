@@ -3,14 +3,14 @@
  * FILE:	SMCSideMenuController.swift
  * DESCRIPTION:	SideMenuController: Sliding Side Menu Controller Main Class
  * DATE:	Mon, Feb 18 2019
- * UPDATED:	Sat, Mar 23 2019
+ * UPDATED:	Wed, Jan 22 2020
  * AUTHOR:	Kouichi ABE (WALL) / 阿部康一
  * E-MAIL:	kouichi@MagickWorX.COM
  * URL:		http://www.MagickWorX.COM/
- * COPYRIGHT:	(c) 2019 阿部康一／Kouichi ABE (WALL), All rights reserved.
+ * COPYRIGHT:	(c) 2019-2020 阿部康一／Kouichi ABE (WALL), All rights reserved.
  * LICENSE:
  *
- *  Copyright (c) 2019 Kouichi ABE (WALL) <kouichi@MagickWorX.COM>,
+ *  Copyright (c) 2019-2020 Kouichi ABE (WALL) <kouichi@MagickWorX.COM>,
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -53,8 +53,6 @@ extension Notification.Name {
   }
 }
 
-fileprivate let kSideMenuTableViewCellIdentifier: String = "SideMenuTableViewCellIdentifier"
-fileprivate let kSideMenuHeaderIdentifier: String = "SideMenuHeaderIdentifier"
 fileprivate let kSectionHeaderLabelHeight: CGFloat = 32.0
 fileprivate let kSectionHeaderFontSize: CGFloat    = 14.0
 
@@ -64,7 +62,7 @@ fileprivate final class SideMenuHeader: UITableViewHeaderFooterView
     let label: UILabel = UILabel()
     label.backgroundColor = .clear
     label.textAlignment = .left
-    label.textColor = .darkGray
+    label.textColor = .secondaryLabel
     label.font = UIFont.boldSystemFont(ofSize: kSectionHeaderFontSize)
     return label
   }()
@@ -98,22 +96,22 @@ public class SMCSideMenuController: UIViewController
   public private(set) var isMenuVisible: Bool = true
   public private(set) weak var currentViewController: UIViewController? = nil
 
+  private let kSideMenuTableViewCellIdentifier: String = "SideMenuTableViewCellIdentifier"
+  private let kSideMenuHeaderIdentifier: String = "SideMenuHeaderIdentifier"
+
   public lazy private(set) var tableView: UITableView = {
     let tableView = UITableView(frame: .zero, style: self.tableStyle)
     tableView.register(SideMenuHeader.self, forHeaderFooterViewReuseIdentifier: kSideMenuHeaderIdentifier)
     tableView.register(UITableViewCell.self, forCellReuseIdentifier: kSideMenuTableViewCellIdentifier)
     tableView.dataSource = self
     tableView.delegate = self
-    tableView.backgroundColor = .groupTableViewBackground
-    if #available(iOS 11.0, *) {
-      tableView.contentInsetAdjustmentBehavior = .never
-    }
-    tableView.separatorColor = .darkGray
-    tableView.separatorInset = .zero
+    tableView.backgroundColor = .systemGroupedBackground
+    tableView.separatorColor = .systemGray
     tableView.layoutMargins = .zero
     tableView.isScrollEnabled = true
-    tableView.rowHeight = UITableView.automaticDimension
     tableView.estimatedRowHeight = 44.0
+    tableView.rowHeight = UITableView.automaticDimension
+    tableView.contentInsetAdjustmentBehavior = .never
     tableView.autoresizingMask = [ .flexibleWidth, .flexibleHeight ]
     return tableView
   }()
@@ -181,7 +179,7 @@ public class SMCSideMenuController: UIViewController
   public override func loadView() {
     super.loadView()
 
-    self.view.backgroundColor	= .white
+    self.view.backgroundColor	= .systemBackground
     self.view.autoresizesSubviews = true
     self.view.autoresizingMask	= [ .flexibleWidth, .flexibleHeight ]
 
@@ -190,14 +188,6 @@ public class SMCSideMenuController: UIViewController
 
     // Setup the menu table view
     self.view.addSubview(tableView)
-    tableView.frame = {
-      let statusBarHeight: CGFloat = UIApplication.shared.statusBarFrame.size.height
-      var frame: CGRect  = self.view.frame
-      frame.origin.y    += statusBarHeight
-      frame.size.height -= statusBarHeight
-      frame.size.width   = self.sideMenuWidth
-      return frame
-    }()
 
     /*
      * XXX:
@@ -253,14 +243,21 @@ public class SMCSideMenuController: UIViewController
   public override func viewWillLayoutSubviews() {
     super.viewWillLayoutSubviews()
 
-    if #available(iOS 11.0, *) {
-      self.view.frame = {
-        let insets = self.view.safeAreaInsets
-        var frame: CGRect  = self.view.frame
-        frame.size.height -= insets.bottom
-        return frame
-      }()
-    }
+    self.view.frame = {
+      let insets = self.view.safeAreaInsets
+      var frame: CGRect  = self.view.frame
+      frame.size.height -= insets.bottom
+      return frame
+    }()
+
+    tableView.frame = {
+      let statusBarHeight: CGFloat = view.window?.windowScene?.statusBarManager?.statusBarFrame.size.height ?? 0.0
+      var frame: CGRect  = self.view.frame
+      frame.origin.y    += statusBarHeight
+      frame.size.height -= statusBarHeight
+      frame.size.width   = self.sideMenuWidth
+      return frame
+    }()
   }
 }
 
@@ -400,6 +397,10 @@ extension SMCSideMenuController: UITableViewDataSource
 // MARK: - UITableViewDelegate
 extension SMCSideMenuController: UITableViewDelegate
 {
+  public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    cell.separatorInset = .zero
+  }
+
   public func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
   }
 
