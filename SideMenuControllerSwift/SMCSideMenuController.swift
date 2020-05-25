@@ -3,7 +3,7 @@
  * FILE:	SMCSideMenuController.swift
  * DESCRIPTION:	SideMenuController: Sliding Side Menu Controller Main Class
  * DATE:	Mon, Feb 18 2019
- * UPDATED:	Wed, Jan 22 2020
+ * UPDATED:	Mon, May 25 2020
  * AUTHOR:	Kouichi ABE (WALL) / 阿部康一
  * E-MAIL:	kouichi@MagickWorX.COM
  * URL:		http://www.MagickWorX.COM/
@@ -468,8 +468,8 @@ extension SMCSideMenuController
     return image?.withRenderingMode(.alwaysOriginal)
   }
 
-  public func menuButtonItem() -> UIBarButtonItem {
-    let image: UIImage? = menuIcon()
+  public func menuButtonItem(iconColor: UIColor = .white) -> UIBarButtonItem {
+    let image: UIImage? = menuIcon(color: iconColor)
     let button: UIButton = UIButton(type: .custom)
     button.setImage(image, for: .normal)
     let color: UIColor = UIColor(white: 1.0, alpha: 0.5)
