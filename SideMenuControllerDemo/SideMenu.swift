@@ -3,7 +3,7 @@
  * FILE:	SideMenu.swift
  * DESCRIPTION:	SideMenuControllerDemo: Menu for SideMenuController
  * DATE:	Tue, Feb 19 2019
- * UPDATED:	Wed, Jan 22 2020
+ * UPDATED:	Thu, Oct  8 2020
  * AUTHOR:	Kouichi ABE (WALL) / 阿部康一
  * E-MAIL:	kouichi@MagickWorX.COM
  * URL:		http://www.MagickWorX.COM/
@@ -86,11 +86,53 @@ class SideMenu: SMCSideMenu
     ]
   }
 
+  override open func sideMenu(_ sideMenuController: SMCSideMenuController, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) -> Void {
+    cell.imageView?.tintColor = UIColor {
+      (traitCollection: UITraitCollection) -> UIColor in
+      switch traitCollection.userInterfaceStyle {
+        case .light, .unspecified: return .systemBlue
+        case .dark:                return .systemRed
+        @unknown default:          return .systemGreen
+      }
+    }
+  }
+
+  override open func sideMenu(_ sideMenuController: SMCSideMenuController, didSelectRowAt indexPath: IndexPath) -> Void {
+    UserDefaults.standard.set(indexPath, forKey: "LaunchKey")
+  }
+
+  override open func startupIndexPath() -> IndexPath? {
+    return UserDefaults.standard.indexPath(forKey: "LaunchKey")
+  }
+
   override open func textColorOfHeader(in section: Int) -> UIColor? {
-    return .label
+    return UIColor {
+      (traitCollection: UITraitCollection) -> UIColor in
+      switch traitCollection.userInterfaceStyle {
+        case .light, .unspecified: return .systemBlue
+        case .dark:                return .label
+        @unknown default:          return .systemRed
+      }
+    }
   }
 
   override open func backgroundColorOfHeader(in section: Int) -> UIColor? {
     return .clear
+  }
+}
+
+extension UserDefaults
+{
+  func indexPath(forKey key: String) -> IndexPath? {
+    if let data = data(forKey: key), let indexPath = try? JSONDecoder().decode(IndexPath.self, from: data) {
+      return indexPath
+    }
+    return nil
+  }
+
+  func set(_ indexPath: IndexPath, forKey key: String) {
+    if let data = try? JSONEncoder().encode(indexPath) {
+      set(data, forKey: key)
+    }
   }
 }

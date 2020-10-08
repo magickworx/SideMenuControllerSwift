@@ -3,7 +3,7 @@
  * FILE:	SMCSideMenuController.swift
  * DESCRIPTION:	SideMenuController: Sliding Side Menu Controller Main Class
  * DATE:	Mon, Feb 18 2019
- * UPDATED:	Mon, May 25 2020
+ * UPDATED:	Thu, Oct  8 2020
  * AUTHOR:	Kouichi ABE (WALL) / 阿部康一
  * E-MAIL:	kouichi@MagickWorX.COM
  * URL:		http://www.MagickWorX.COM/
@@ -40,6 +40,14 @@
 
 import UIKit
 import QuartzCore
+
+// MARK: - UIViewController extension
+extension UIViewController
+{
+  @objc open func sideMenu(didSelect viewController: UIViewController) {
+    // nothing to do
+  }
+}
 
 // MARK: -
 let SMCSideMenuControllerDidShowMenuNotification: String = "SMCSideMenuControllerDidShowMenuNotification"
@@ -80,11 +88,14 @@ fileprivate final class SideMenuHeader: UITableViewHeaderFooterView
   override func layoutSubviews() {
     super.layoutSubviews()
 
-    let x: CGFloat = 4.0
-    let y: CGFloat = 4.0
-    let w: CGFloat = contentView.frame.size.width - x * 2.0
-    let h: CGFloat = kSectionHeaderLabelHeight - y * 2.0
-    titleLabel.frame = CGRect(x: x, y: y, width: w, height: h)
+    titleLabel.frame = {
+      let m: UIEdgeInsets = UIEdgeInsets(top: 4.0, left: 4.0, bottom: 4.0, right: 4.0)
+      let x: CGFloat = m.left
+      let y: CGFloat = m.top
+      let w: CGFloat = contentView.frame.size.width - (m.left + m.right)
+      let h: CGFloat = kSectionHeaderLabelHeight - (m.top + m.bottom)
+      return CGRect(x: x, y: y, width: w, height: h)
+    }()
   }
 }
 
@@ -116,11 +127,11 @@ public class SMCSideMenuController: UIViewController
     return tableView
   }()
 
-  private lazy var sideMenuWidth: CGFloat = {
+  private var sideMenuWidth: CGFloat {
     let width: CGFloat = self.view.bounds.size.width
     let right: CGFloat = 64.0 // Right margin at showing side menu
     return width - right
-  }()
+  }
 
   // Setup the container view which will hold the child view controllers view
   private lazy var containerView: UIView = {
@@ -155,7 +166,6 @@ public class SMCSideMenuController: UIViewController
   // Setup the touch mask for when the menu is visible
   private lazy var touchView: UIView = {
     let touchView: UIView = UIView()
-    touchView.frame = self.containerView.frame
     let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapGestureHandler))
     touchView.addGestureRecognizer(tapGesture)
     return touchView
@@ -215,17 +225,12 @@ public class SMCSideMenuController: UIViewController
 
     // Set the default view controller
     let viewController: UIViewController = delegate.sideMenuDefaultViewController(self)
-    viewController.view.frame = {
-      var frame: CGRect = self.containerView.frame
-      frame.origin = CGPoint.zero
-      return frame
-    }()
-
     self.addChild(viewController)
-    viewController.didMove(toParent: self)
-
+    viewController.willMove(toParent: self)
     viewController.viewWillAppear(false)
+    viewController.view.frame = self.containerView.bounds
     self.containerView.addSubview(viewController.view)
+    viewController.didMove(toParent: self)
     viewController.viewDidAppear(false)
 
     self.currentViewController = viewController
@@ -243,21 +248,27 @@ public class SMCSideMenuController: UIViewController
   public override func viewWillLayoutSubviews() {
     super.viewWillLayoutSubviews()
 
-    self.view.frame = {
-      let insets = self.view.safeAreaInsets
-      var frame: CGRect  = self.view.frame
-      frame.size.height -= insets.bottom
-      return frame
-    }()
+    let safeAreaInsets: UIEdgeInsets = self.view.safeAreaInsets
+
+    let height: CGFloat = self.view.bounds.size.height - (safeAreaInsets.top + safeAreaInsets.bottom)
 
     tableView.frame = {
-      let statusBarHeight: CGFloat = view.window?.windowScene?.statusBarManager?.statusBarFrame.size.height ?? 0.0
-      var frame: CGRect  = self.view.frame
-      frame.origin.y    += statusBarHeight
-      frame.size.height -= statusBarHeight
-      frame.size.width   = self.sideMenuWidth
+      let x: CGFloat = 0.0
+      let y: CGFloat = safeAreaInsets.top
+      let w: CGFloat = self.sideMenuWidth
+      let h: CGFloat = height
+      return CGRect(x: x, y: y, width: w, height: h)
+    }()
+
+    touchView.frame = {
+      var frame = self.view.bounds
+      frame.origin.x = self.sideMenuWidth
       return frame
     }()
+  }
+
+  public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    super.viewWillTransition(to: size, with: coordinator)
   }
 }
 
@@ -338,15 +349,14 @@ extension SMCSideMenuController
     viewController.didMove(toParent: self)
 
     // Reset the frame view
-    var frame: CGRect = self.containerView.frame
-    frame.origin = CGPoint.zero
-    viewController.view.frame = frame
+    viewController.view.frame = self.containerView.bounds
 
     let animationsHandler: () -> Void = {
       [unowned self] in
       // Remove the old view controller
       self.currentViewController?.willMove(toParent: nil)
       self.currentViewController?.removeFromParent()
+      self.currentViewController?.didMove(toParent: nil)
       // Reset the pointer
       self.currentViewController = viewController
     }
@@ -363,6 +373,20 @@ extension SMCSideMenuController
                     options: [],
                     animations: animationsHandler,
                     completion: completionHandler)
+
+    self.performExtension(with: viewController)
+  }
+
+  private func performExtension(with viewController: UIViewController) {
+    // Call the original selector if exists
+    if viewController.isKind(of: UINavigationController.self) {
+      if let navigationController = viewController as? UINavigationController {
+        navigationController.topViewController?.sideMenu(didSelect: viewController)
+      }
+    }
+    else {
+      viewController.sideMenu(didSelect: viewController)
+    }
   }
 }
 
@@ -399,26 +423,30 @@ extension SMCSideMenuController: UITableViewDelegate
 {
   public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
     cell.separatorInset = .zero
+    delegate.sideMenu(self, willDisplay: cell, forRowAt: indexPath)
   }
 
   public func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-  }
-
-  public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-    if let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: kSideMenuHeaderIdentifier) as? SideMenuHeader {
-      headerView.titleLabel.text = delegate.sideMenu(self, titleForHeaderInSection: section)
+    if let headerView = view as? SideMenuHeader {
       if let color = delegate.textColorOfHeader(in: section) {
         headerView.titleLabel.textColor = color
       }
       if let color = delegate.backgroundColorOfHeader(in: section) {
         headerView.contentView.backgroundColor = color
       }
+    }
+  }
+
+  public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    if let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: kSideMenuHeaderIdentifier) as? SideMenuHeader {
+      headerView.titleLabel.text = delegate.sideMenu(self, titleForHeaderInSection: section)
       return headerView
     }
     return nil
   }
 
   public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    delegate.sideMenu(self, didSelectRowAt: indexPath)
     DispatchQueue.global(qos: DispatchQoS.QoSClass.userInteractive).async {
       autoreleasepool {
         DispatchQueue.main.async {

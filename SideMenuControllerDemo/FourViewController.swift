@@ -3,14 +3,14 @@
  * FILE:	FourViewController.swift
  * DESCRIPTION:	SideMenuControllerDemo: View Controller for Demo
  * DATE:	Tue, Feb 19 2019
- * UPDATED:	Tue, Feb 19 2019
+ * UPDATED:	Thu, Oct  8 2020
  * AUTHOR:	Kouichi ABE (WALL) / 阿部康一
  * E-MAIL:	kouichi@MagickWorX.COM
  * URL:		http://www.MagickWorX.COM/
- * COPYRIGHT:	(c) 2019 阿部康一／Kouichi ABE (WALL), All rights reserved.
+ * COPYRIGHT:	(c) 2019-2020 阿部康一／Kouichi ABE (WALL), All rights reserved.
  * LICENSE:
  *
- *  Copyright (c) 2019 Kouichi ABE (WALL) <kouichi@MagickWorX.COM>,
+ *  Copyright (c) 2019-2020 Kouichi ABE (WALL) <kouichi@MagickWorX.COM>,
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,8 @@ class FourViewController: BaseViewController
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    self.navigationController?.navigationBar.barTintColor = .systemOrange
   }
 
   override func viewWillAppear(_ animated: Bool) {

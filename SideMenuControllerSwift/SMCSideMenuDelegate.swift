@@ -3,14 +3,14 @@
  * FILE:	SMCSideMenuDelegate.swift
  * DESCRIPTION:	SideMenuController: Delegate Protocol
  * DATE:	Mon, Feb 18 2019
- * UPDATED:	Tue, Feb 19 2019
+ * UPDATED:	Thu, Oct  8 2020
  * AUTHOR:	Kouichi ABE (WALL) / 阿部康一
  * E-MAIL:	kouichi@MagickWorX.COM
  * URL:		http://www.MagickWorX.COM/
- * COPYRIGHT:	(c) 2019 阿部康一／Kouichi ABE (WALL), All rights reserved.
+ * COPYRIGHT:	(c) 2019-2020 阿部康一／Kouichi ABE (WALL), All rights reserved.
  * LICENSE:
  *
- *  Copyright (c) 2019 Kouichi ABE (WALL) <kouichi@MagickWorX.COM>,
+ *  Copyright (c) 2019-2020 Kouichi ABE (WALL) <kouichi@MagickWorX.COM>,
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,9 @@ import UIKit
 
 public protocol SMCSideMenuDelegate: class
 {
+  // Override default view controller indexPath to show on startup.
+  func startupIndexPath() -> IndexPath?
+
   // The default view controller to show on startup. This cannot be nil.
   func sideMenuDefaultViewController(_ sideMenuController: SMCSideMenuController) -> UIViewController
 
@@ -53,7 +56,9 @@ public protocol SMCSideMenuDelegate: class
   func numberOfSections(in sideMenuController: SMCSideMenuController) -> Int
   func sideMenu(_ sideMenuController: SMCSideMenuController, numberOfRowsInSection section: Int) -> Int
   func sideMenu(_ sideMenuController: SMCSideMenuController, configure cell: UITableViewCell, forRowAt indexPath: IndexPath) -> UITableViewCell
+  func sideMenu(_ sideMenuController: SMCSideMenuController, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) -> Void
   func sideMenu(_ sideMenuController: SMCSideMenuController, heightForHeaderInSection section: Int) -> CGFloat
+  func sideMenu(_ sideMenuController: SMCSideMenuController, didSelectRowAt indexPath: IndexPath) -> Void
 
   // Delegate for UITableView
   func sideMenu(_ sideMenuController: SMCSideMenuController, titleForHeaderInSection section: Int) -> String?
@@ -71,6 +76,10 @@ public protocol SMCSideMenuDelegate: class
 // MARK: - Default Implementation
 extension SMCSideMenuDelegate
 {
+  public func startupIndexPath() -> IndexPath? {
+    return nil
+  }
+
   public func textColorOfHeader(in section: Int) -> UIColor? {
     return nil
   }
@@ -95,8 +104,14 @@ extension SMCSideMenuDelegate
     return UITableViewCell()
   }
 
+  public func sideMenu(_ sideMenuController: SMCSideMenuController, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) -> Void {
+  }
+
   public func sideMenu(_ sideMenuController: SMCSideMenuController, heightForHeaderInSection section: Int) -> CGFloat {
     return 0.0
+  }
+
+  public func sideMenu(_ sideMenuController: SMCSideMenuController, didSelectRowAt indexPath: IndexPath) -> Void {
   }
 }
 

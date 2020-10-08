@@ -3,7 +3,7 @@
  * FILE:	SMCSideMenu.swift
  * DESCRIPTION:	SideMenuController: Base Menu Class
  * DATE:	Mon, Feb 18 2019
- * UPDATED:	Wed, Jan 22 2020
+ * UPDATED:	Thu, Oct  8 2020
  * AUTHOR:	Kouichi ABE (WALL) / 阿部康一
  * E-MAIL:	kouichi@MagickWorX.COM
  * URL:		http://www.MagickWorX.COM/
@@ -85,12 +85,18 @@ open class SMCSideMenu: NSObject
     return navigationController
   }
 
+  open func sideMenu(_ sideMenuController: SMCSideMenuController, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) -> Void {
+  }
+
+  open func sideMenu(_ sideMenuController: SMCSideMenuController, didSelectRowAt indexPath: IndexPath) -> Void {
+  }
+
   open func textColorOfHeader(in section: Int) -> UIColor? {
-    return .systemBackground
+    return .systemGray
   }
 
   open func backgroundColorOfHeader(in section: Int) -> UIColor? {
-    return .systemGray
+    return .systemBackground
   }
 
   open func sideMenu(_ sideMenuController: SMCSideMenuController, didShowMenu viewController: UIViewController) {
@@ -98,13 +104,20 @@ open class SMCSideMenu: NSObject
 
   open func sideMenu(_ sideMenuController: SMCSideMenuController, didHideMenu viewController: UIViewController) {
   }
+
+  open func startupIndexPath() -> IndexPath? {
+    return nil
+  }
 }
 
 extension SMCSideMenu: SMCSideMenuDelegate
 {
   // The default view controller to show on startup. This cannot be nil.
   public func sideMenuDefaultViewController(_ sideMenuController: SMCSideMenuController) -> UIViewController {
-    let indexPath: IndexPath = IndexPath(row: 0, section: 0)
+    let indexPath: IndexPath = {
+      if let indexPath = self.startupIndexPath() { return indexPath }
+      return IndexPath(row: 0, section: 0)
+    }()
     sideMenuController.tableView.selectRow(at: indexPath, animated: false, scrollPosition: .top)
     return viewController(in: sideMenuController, at: indexPath)
   }
