@@ -6,7 +6,7 @@ Xcode のプロジェクト一式を登録してあるので、実行すれば�
 
 ## How to use SideMenuControllerSwift.framework
 
-Xcode の Build Target に SideMenuControllerSwiftFatBinary を指定して Build を実行すると、SideMenuControllerSwift.framework が作成される。これを自作アプリの Xcode の Embedded Binaries に設定する。
+Xcode の Build Target に SideMenuControllerSwiftXCFramework を指定して Build を実行すると、SideMenuControllerSwift.xcframework が作成される。これを自作アプリの Xcode の Embedded Binaries に設定する。
 
 あるいは、SideMenuControllerSwift フォルダを自作アプリの Xcode の Project に追加する。
 
@@ -79,9 +79,9 @@ class SideMenu: SMCSideMenu
 
 ## Requirements
 
- - Swift 5.0
- - iOS 13.3 or later
- - Xcode 11.3 or later
+ - Swift 5
+ - iOS 13.6 or later
+ - Xcode 12.3 or later
 
 
 ## License Agreement

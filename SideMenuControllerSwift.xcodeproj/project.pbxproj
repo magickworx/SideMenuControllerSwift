@@ -7,17 +7,16 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		B3B7F275221AA332005A3BD0 /* SideMenuControllerSwiftFatBinary */ = {
+		B3B933D02588E734001D8E47 /* SideMenuControllerSwiftXCFramework */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = B3B7F276221AA332005A3BD0 /* Build configuration list for PBXAggregateTarget "SideMenuControllerSwiftFatBinary" */;
+			buildConfigurationList = B3B933D12588E734001D8E47 /* Build configuration list for PBXAggregateTarget "SideMenuControllerSwiftXCFramework" */;
 			buildPhases = (
-				B355FDB4221BD67500651ECE /* ShellScript */,
-				B355FDB5221BD69900651ECE /* ShellScript */,
+				B3FD20C22588F46C0009A1B8 /* ShellScript */,
 			);
 			dependencies = (
 			);
-			name = SideMenuControllerSwiftFatBinary;
-			productName = SideMenuControllerSwiftFatBinary;
+			name = SideMenuControllerSwiftXCFramework;
+			productName = SideMenuControllerSwiftXCFramework;
 		};
 /* End PBXAggregateTarget section */
 
@@ -234,11 +233,11 @@
 						CreatedOnToolsVersion = 10.1;
 						LastSwiftMigration = 1010;
 					};
-					B3B7F275221AA332005A3BD0 = {
-						CreatedOnToolsVersion = 10.1;
-					};
 					B3B7F27C221AA382005A3BD0 = {
 						CreatedOnToolsVersion = 10.1;
+					};
+					B3B933D02588E734001D8E47 = {
+						CreatedOnToolsVersion = 12.3;
 					};
 				};
 			};
@@ -256,8 +255,8 @@
 			projectRoot = "";
 			targets = (
 				B3B7F269221AA2EF005A3BD0 /* SideMenuControllerSwift */,
-				B3B7F275221AA332005A3BD0 /* SideMenuControllerSwiftFatBinary */,
 				B3B7F27C221AA382005A3BD0 /* SideMenuControllerDemo */,
+				B3B933D02588E734001D8E47 /* SideMenuControllerSwiftXCFramework */,
 			);
 		};
 /* End PBXProject section */
@@ -282,40 +281,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		B355FDB4221BD67500651ECE /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "#!/bin/sh\n\nUNIVERSAL_OUTPUTFOLDER=${BUILD_DIR}/${CONFIGURATION}-universal\n\nARCHS_IOS=\"arm64\"\nARCHS_SIMULATOR=\"x86_64\"\n\n# make sure the output directory exists\nmkdir -p \"${UNIVERSAL_OUTPUTFOLDER}\"\n\n# Step 1. Build Device and Simulator versions\nxcodebuild BITCODE_GENERATION_MODE=bitcode OTHER_CFLAGS=\"-fembed-bitcode\" -target \"${PROJECT_NAME}\" ONLY_ACTIVE_ARCH=NO ARCHS=\"${ARCHS_IOS}\" -configuration ${CONFIGURATION} -sdk iphoneos  BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build\nxcodebuild BITCODE_GENERATION_MODE=bitcode OTHER_CFLAGS=\"-fembed-bitcode\" -target \"${PROJECT_NAME}\" -configuration ${CONFIGURATION} -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO ARCHS=\"${ARCHS_SIMULATOR}\" BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build\n\n# Step 2. Copy the framework structure (from iphoneos build) to the universal folder\ncp -R \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${PROJECT_NAME}.framework\" \"${UNIVERSAL_OUTPUTFOLDER}/\"\n\n# Step 3. Copy Swift modules from iphonesimulator build (if it exists) to the copied framework directory\nSIMULATOR_SWIFT_MODULES_DIR=\"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${PROJECT_NAME}.framework/Modules/${PROJECT_NAME}.swiftmodule/.\"\nif [ -d \"${SIMULATOR_SWIFT_MODULES_DIR}\" ]; then\ncp -R \"${SIMULATOR_SWIFT_MODULES_DIR}\" \"${UNIVERSAL_OUTPUTFOLDER}/${PROJECT_NAME}.framework/Modules/${PROJECT_NAME}.swiftmodule\"\nfi\n\n# Step 4. Create universal binary file using lipo and place the combined executable in the copied framework directory\nlipo -create -output \"${UNIVERSAL_OUTPUTFOLDER}/${PROJECT_NAME}.framework/${PROJECT_NAME}\" \"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${PROJECT_NAME}.framework/${PROJECT_NAME}\" \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${PROJECT_NAME}.framework/${PROJECT_NAME}\"\n\n# Step 5. Convenience step to copy the framework to the project's directory\ncp -R \"${UNIVERSAL_OUTPUTFOLDER}/${PROJECT_NAME}.framework\" \"${PROJECT_DIR}\"\n\n# Step 6. Convenience step to open the project's directory in Finder\nopen \"${PROJECT_DIR}\"\n";
-		};
-		B355FDB5221BD69900651ECE /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "#! /bin/sh\nlipo -info \"${PROJECT_DIR}/${PROJECT_NAME}.framework/${PROJECT_NAME}\"\n";
-		};
 		B3B2571123D82B750083B16E /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -332,6 +297,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# skip if we run in debug\nif [ \"$CONFIGURATION\" == \"Debug\" ]; then\necho \"Skip frameworks cleaning in debug version\"\nexit 0\nfi\n\nAPP_PATH=\"${TARGET_BUILD_DIR}/${WRAPPER_NAME}\"\n\n# This script loops through the frameworks embedded in the application and\n# removes unused architectures.\nfind \"$APP_PATH\" -name '*.framework' -type d | while read -r FRAMEWORK\ndo\nFRAMEWORK_EXECUTABLE_NAME=$(defaults read \"$FRAMEWORK/Info.plist\" CFBundleExecutable)\nFRAMEWORK_EXECUTABLE_PATH=\"$FRAMEWORK/$FRAMEWORK_EXECUTABLE_NAME\"\necho \"Executable is $FRAMEWORK_EXECUTABLE_PATH\"\n\nEXTRACTED_ARCHS=()\n\nfor ARCH in $ARCHS\ndo\necho \"Extracting $ARCH from $FRAMEWORK_EXECUTABLE_NAME\"\nlipo -extract \"$ARCH\" \"$FRAMEWORK_EXECUTABLE_PATH\" -o \"$FRAMEWORK_EXECUTABLE_PATH-$ARCH\"\nEXTRACTED_ARCHS+=(\"$FRAMEWORK_EXECUTABLE_PATH-$ARCH\")\ndone\n\necho \"Merging extracted architectures: ${ARCHS}\"\nlipo -o \"$FRAMEWORK_EXECUTABLE_PATH-merged\" -create \"${EXTRACTED_ARCHS[@]}\"\nrm \"${EXTRACTED_ARCHS[@]}\"\n\necho \"Replacing original executable with thinned version\"\nrm \"$FRAMEWORK_EXECUTABLE_PATH\"\nmv \"$FRAMEWORK_EXECUTABLE_PATH-merged\" \"$FRAMEWORK_EXECUTABLE_PATH\"\n\ndone\n\n";
+		};
+		B3FD20C22588F46C0009A1B8 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/sh\n\nOUTPUT_FOLDER=${BUILD_DIR}/${CONFIGURATION}-xcframework\n\nARCHS_IOS=\"arm64\"\nARCHS_SIMULATOR=\"x86_64\"\n\n# make sure the output directory exists\nmkdir -p \"${OUTPUT_FOLDER}\"\n\n# Step 1. Archive Device and Simulator versions\nmk_archive() {\n  archs=$1\n  platform=$2\n  output=$3\n\n  xcodebuild \\\n  ENABLE_BITCODE=YES \\\n  BITCODE_GENERATION_MODE=bitcode \\\n  OTHER_CFLAGS=\"-fembed-bitcode\" \\\n  BUILD_LIBRARY_FOR_DISTRIBUTION=YES \\\n  SKIP_INSTALL=NO \\\n  ONLY_ACTIVE_ARCH=YES \\\n  ARCHS=\"${archs}\" \\\n  -project \"${PROJECT_NAME}.xcodeproj\" \\\n  -configuration \"${CONFIGURATION}\" \\\n  -scheme \"${PROJECT_NAME}\" \\\n  -destination \"generic/platform=${platform}\" \\\n  -archivePath \"${OUTPUT_FOLDER}/${PROJECT_NAME}-${output}\" \\\n  archive\n}\n\nmk_archive ${ARCHS_IOS} \"iOS\" \"iOS\"\nmk_archive ${ARCHS_SIMULATOR} \"iOS Simulator\" \"iOS_Simulator\"\n\n# Step 2. Create xcframework with all frameworks\nxcodebuild \\\n-create-xcframework \\\n-framework \"${OUTPUT_FOLDER}/${PROJECT_NAME}-iOS.xcarchive/Products/Library/Frameworks/${PROJECT_NAME}.framework\" \\\n-framework \"${OUTPUT_FOLDER}/${PROJECT_NAME}-iOS_Simulator.xcarchive/Products/Library/Frameworks/${PROJECT_NAME}.framework\" \\\n-output \"${OUTPUT_FOLDER}/${PROJECT_NAME}.xcframework\"\n\n# Step 3. Convenience step to open the output's directory in Finder\nopen \"${OUTPUT_FOLDER}\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -440,7 +422,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -499,7 +481,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -518,6 +500,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -547,6 +530,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -565,24 +549,6 @@
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "$(ARCHS_STANDARD)";
-			};
-			name = Release;
-		};
-		B3B7F277221AA332005A3BD0 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				VALID_ARCHS = "$(ARCHS_STANDARD)";
-			};
-			name = Debug;
-		};
-		B3B7F278221AA332005A3BD0 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALID_ARCHS = "$(ARCHS_STANDARD)";
 			};
 			name = Release;
@@ -623,6 +589,22 @@
 			};
 			name = Release;
 		};
+		B3B933D22588E734001D8E47 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		B3B933D32588E734001D8E47 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -644,20 +626,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B3B7F276221AA332005A3BD0 /* Build configuration list for PBXAggregateTarget "SideMenuControllerSwiftFatBinary" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				B3B7F277221AA332005A3BD0 /* Debug */,
-				B3B7F278221AA332005A3BD0 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		B3B7F28C221AA393005A3BD0 /* Build configuration list for PBXNativeTarget "SideMenuControllerDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B3B7F28D221AA393005A3BD0 /* Debug */,
 				B3B7F28E221AA393005A3BD0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B3B933D12588E734001D8E47 /* Build configuration list for PBXAggregateTarget "SideMenuControllerSwiftXCFramework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B3B933D22588E734001D8E47 /* Debug */,
+				B3B933D32588E734001D8E47 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
